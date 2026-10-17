@@ -38,6 +38,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1)}
 .progress>div{height:100%;background:#22c55e;border-radius:99px}
 .today-banner{background:linear-gradient(90deg,#22c55e22,#2f7df622);border:1px dashed #22c55e;border-radius:14px;padding:12px 16px;margin-bottom:14px;font-size:.95rem}
 .today-banner b{color:#4ade80}
+.group-head{grid-column:1/-1;margin:18px 0 2px;padding-bottom:4px;border-bottom:1px solid #334155;color:var(--muted);font-size:.95rem}
 [dir=rtl] .wrap{direction:rtl}
 </style>
 </head>
@@ -215,8 +216,7 @@ window.app = {
       banner.hidden = true;
     }
 
-    this.tasks.forEach(task => {
-      if (activeTab === "today" && !(task.deadline === today || (task.deadline && task.deadline < today && !task.done))) return;
+    const makeCard = (task) => {
       const late = task.deadline && task.deadline < today && !task.done;
       const soon = task.deadline && task.deadline >= today && task.deadline <= new Date(Date.now() + 2 * 864e5).toISOString().slice(0, 10);
       const cls = task.done ? "ok" : late ? "late" : soon ? "soon" : "ok";
@@ -227,8 +227,34 @@ window.app = {
         '<div class="progress"><div style="width:' + (task.done ? 100 : 40) + '%"></div></div>' +
         '<button class="btn primary" onclick="app.toggle(' + task.id + "," + task.done + ')">' + this.t("done") + "</button>" +
         '<button class="btn ghost" onclick="app.del(' + task.id + ')">' + this.t("delete") + "</button>";
-      grid.appendChild(card);
-    });
+      return card;
+    };
+
+    if (activeTab === "today") {
+      this.tasks.forEach(task => {
+        if (!(task.deadline === today || (task.deadline && task.deadline < today && !task.done))) return;
+        grid.appendChild(makeCard(task));
+      });
+    } else {
+      /* Week-weergave: gegroepeerd per categorie */
+      Object.keys(CATEGORIES).forEach(cat => {
+        const list = this.tasks.filter(tk => CATEGORIES[cat].includes(tk.subject));
+        if (!list.length) return;
+        const head = document.createElement("h3");
+        head.className = "group-head";
+        head.textContent = cat;
+        grid.appendChild(head);
+        list.forEach(task => grid.appendChild(makeCard(task)));
+      });
+      /* Taken met een vak dat niet (meer) in een categorie staat */
+      const rest = this.tasks.filter(tk => !Object.values(CATEGORIES).some(l => l.includes(tk.subject)));
+      if (rest.length) {
+        const head = document.createElement("h3");
+        head.className = "group-head"; head.textContent = "➕ Overig";
+        grid.appendChild(head);
+        rest.forEach(task => grid.appendChild(makeCard(task)));
+      }
+    }
 
     document.getElementById("langSel").value = this.lang;
     document.getElementById("t-addTask").textContent = "+ " + this.t("addTask");
