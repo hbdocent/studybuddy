@@ -24,6 +24,7 @@ body{background:linear-gradient(160deg,#0f172a,#16233d);color:var(--text);min-he
 .card{background:var(--card);border-radius:16px;padding:16px;border:1px solid #ffffff14}
 .login-card{max-width:420px;margin:40px auto}
 h1{font-size:1.2rem;margin-bottom:10px}
+h3{font-size:1.02rem;margin-bottom:6px}
 input{width:100%;background:#0f172a;border:1px solid #334155;color:var(--text);border-radius:10px;padding:11px;margin:8px 0;font-size:1rem}
 .muted{color:var(--muted);font-size:.9rem;margin-bottom:8px;line-height:1.4}
 .btn{border:none;border-radius:12px;padding:10px 16px;font-weight:700;cursor:pointer;margin:4px 6px 4px 0;font-size:.9rem}
@@ -81,97 +82,12 @@ input{width:100%;background:#0f172a;border:1px solid #334155;color:var(--text);b
 
 </div>
 <script type="module">
-// ==== VUL HIER JE SUPABASE-GEGEVENS IN (Project Settings → API op supabase.com) ====
-const SUPABASE_URL = "<!doctype html>
-<html lang="nl">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>StudyBuddy</title>
-<link rel="manifest" href="manifest.webmanifest" />
-<meta name="theme-color" content="#0f172a" />
-<style>
-:root{--card:#1e293b;--text:#f1f5f9;--muted:#94a3b8;font-family:'Segoe UI',system-ui,sans-serif}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:linear-gradient(160deg,#0f172a,#16233d);color:var(--text);min-height:100vh}
-.bar{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#1e293bee;position:sticky;top:0;z-index:10;border-bottom:1px solid #334155}
-.logo{font-weight:800;display:flex;align-items:center;gap:8px}
-.dot{width:28px;height:28px;border-radius:50%;background:#2f7df6;display:inline-flex;align-items:center;justify-content:center}
-.lang{background:#26334a;color:var(--text);border:1px solid #334155;border-radius:999px;padding:7px 12px}
-.wrap{max-width:1000px;margin:0 auto;padding:18px}
-.hero{background:linear-gradient(120deg,#0d9488,#2f7df6);border-radius:20px;padding:20px;margin-bottom:16px;display:flex;gap:16px;align-items:center}
-.avatar{width:60px;height:60px;border-radius:50%;background:#fff3;display:flex;align-items:center;justify-content:center;font-size:2rem}
-.tabs{display:flex;gap:8px;margin-bottom:14px}
-.tab{padding:10px 18px;border-radius:999px;background:var(--card);border:1px solid #334155;color:var(--text);cursor:pointer;font-weight:600}
-.tab.active{background:#2f7df6;border-color:transparent}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:14px}
-.card{background:var(--card);border-radius:16px;padding:16px;border:1px solid #ffffff14}
-.login-card{max-width:420px;margin:40px auto}
-h1{font-size:1.2rem;margin-bottom:10px}
-input{width:100%;background:#0f172a;border:1px solid #334155;color:var(--text);border-radius:10px;padding:11px;margin:8px 0;font-size:1rem}
-.muted{color:var(--muted);font-size:.9rem;margin-bottom:8px;line-height:1.4}
-.btn{border:none;border-radius:12px;padding:10px 16px;font-weight:700;cursor:pointer;margin:4px 6px 4px 0;font-size:.9rem}
-.primary{background:linear-gradient(90deg,#22c55e,#2f7df6);color:#fff}
-.ghost{background:#ffffff14;color:var(--text)}
-.tag{display:inline-block;font-size:.72rem;padding:3px 10px;border-radius:999px;font-weight:700;margin-bottom:6px}
-.late{background:#ef444433;color:#fca5a5}.soon{background:#f59e0b33;color:#fbbf24}.ok{background:#22c55e33;color:#4ade80}
-.progress{height:8px;background:#ffffff18;border-radius:99px;overflow:hidden;margin:8px 0}
-.progress>div{height:100%;background:#22c55e;border-radius:99px}
-[dir=rtl] .wrap{direction:rtl}
-</style>
-</head>
-<body>
-<div class="bar">
-  <div class="logo"><span class="dot">📅</span><span>StudyBuddy</span></div>
-  <select id="langSel" onchange="app.setLang(this.value)" aria-label="Taal">
-    <option value="nl">🇳🇱 NL</option><option value="en">🇬🇧 EN</option>
-    <option value="ar">🇸🇦 AR</option><option value="so">🇸🇴 SO</option>
-    <option value="tr">🇹🇷 TR</option><option value="uk">🇺🇦 UK</option>
-    <option value="pl">🇵🇱 PL</option>
-  </select>
-</div>
-<div class="wrap">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-<div id="loginTpl" hidden>
-  <div class="card login-card">
-    <h1 id="t-login"></h1>
-    <p class="muted" id="t-privacy"></p>
-    <input id="in-user" autocomplete="off" />
-    <label id="t-username" for="in-user" class="muted"></label>
-    <input id="in-code" type="password" autocomplete="off" />
-    <label id="t-code" for="in-code" class="muted"></label>
-    <p class="muted" id="err" style="color:#ef4444"></p>
-    <button class="btn primary" id="btn-login"></button>
-  </div>
-</div>
-
-<div id="appTpl" hidden>
-  <div class="hero"><div class="avatar">😎</div><div><h1 id="t-welcome"></h1></div></div>
-  <div class="tabs">
-    <button class="tab active" data-tab="today" onclick="app.tab('today')"></button>
-    <button class="tab" data-tab="week" onclick="app.tab('week')"></button>
-  </div>
-  <button class="btn primary" onclick="app.showAdd()" id="t-addTask"></button>
-  <button class="btn ghost" onclick="app.enablePush()" id="t-notifOn"></button>
-  <button class="btn ghost" onclick="app.logout()" id="t-logout"></button>
-  <div class="card" id="addForm" hidden>
-    <input id="f-subject" placeholder="📘 Vak" />
-    <input id="f-title" placeholder="Opdracht" />
-    <input id="f-deadline" type="date" />
-    <button class="btn primary" onclick="app.addTask()" id="t-save"></button>
-  </div>
-  <div class="grid" id="taskGrid"></div>
-</div>
-
-</div>
-<script type="module">
-// ==== VUL HIER JE SUPABASE-GEGEVENS IN (Project Settings → API op supabase.com) ====
+/* Jouw Supabase-gegevens — al gevuld */
 const SUPABASE_URL = "https://sxnnnxbnmsigyhluthsl.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4bm5ueGJubXNpZ3lobHV0aHNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIyMTM2MjYsImV4cCI6MjEwNzc4OTYyNn0.0JFsYqtB-AgVyJTQpY7ei9lJPayaIIr8Yx_8ss70Yqc";
-const VAPID_PUBLIC_KEY = ""; // fase 4: hier je VAPID publieke sleutel
-// ================================================================================
 
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const I18N = {
@@ -219,7 +135,7 @@ window.app = {
 
   tab(t) {
     document.querySelectorAll(".tab").forEach(el => el.classList.toggle("active", el.dataset.tab === t));
-    this.listTasks(t === "week");
+    this.listTasks();
   },
 
   showAdd() { document.getElementById("addForm").hidden = false; },
@@ -236,7 +152,7 @@ window.app = {
   async toggle(id, done) { await sb.from("tasks").update({ done: !done }).eq("id", id); this.listTasks(); },
   async del(id) { await sb.from("tasks").delete().eq("id", id); this.listTasks(); },
 
-  async listTasks(week) {
+  async listTasks() {
     const { data } = await sb.from("tasks").select("*").order("deadline", { ascending: true, nullsFirst: false });
     const grid = document.getElementById("taskGrid"); grid.innerHTML = "";
     let open = 0;
@@ -245,7 +161,6 @@ window.app = {
       const late = task.deadline && task.deadline < today && !task.done;
       const soon = task.deadline && task.deadline >= today && task.deadline <= new Date(Date.now() + 2 * 864e5).toISOString().slice(0, 10);
       if (!task.done && task.deadline === today) open++;
-      if (week && task.deadline && task.deadline > today) return;
       const cls = task.done ? "ok" : late ? "late" : soon ? "soon" : "ok";
       const emoji = task.done ? "✅" : late ? "⚠️" : soon ? "⏰" : "📅";
       const card = document.createElement("div"); card.className = "card";
@@ -262,153 +177,9 @@ window.app = {
   },
 
   async enablePush() {
-    if (!("serviceWorker" in navigator)) return;
-    const reg = await navigator.serviceWorker.ready;
     const perm = await Notification.requestPermission();
     if (perm !== "granted") return;
-    if (!VAPID_PUBLIC_KEY) { alert("Vul eerst je VAPID-sleutel in (bovenin index.html) — zie README fase 4."); return; }
-    const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: VAPID_PUBLIC_KEY });
-    await sb.from("push_subs").upsert({ user_id: this.user.id, endpoint: sub.endpoint, keys: sub.toJSON().keys });
-  },
-
-  render() {
-    document.getElementById("langSel").value = this.lang;
-    document.getElementById("t-login").textContent = this.t("login");
-    document.getElementById("t-privacy").textContent = this.t("privacy");
-    document.getElementById("t-username").textContent = this.t("username");
-    document.getElementById("t-code").textContent = this.t("code");
-    document.getElementById("btn-login").textContent = this.t("loginBtn");
-    document.querySelector('[data-tab="today"]').textContent = this.t("today");
-    document.querySelector('[data-tab="week"]').textContent = this.t("week");
-    document.getElementById("t-addTask").textContent = "+ " + this.t("addTask");
-    document.getElementById("t-save").textContent = this.t("save");
-    document.getElementById("t-logout").textContent = this.t("logout");
-    document.getElementById("t-notifOn").textContent = this.t("notifOn");
-    document.getElementById("btn-login").onclick = () => this.login();
-  }
-};
-
-(async () => {
-  app.setLang(app.lang);
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    app.user = session.user;
-    document.getElementById("loginTpl").hidden = true;
-    document.getElementById("appTpl").hidden = false;
-    const { data: prof } = await sb.from("profiles").select("username").eq("id", session.user.id).single();
-    document.getElementById("t-welcome").textContent = app.t("welcome", { u: (prof && prof.username) || "" });
-    if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
-    app.listTasks();
-  } else {
-    document.getElementById("loginTpl").hidden = false;
-  }
-  app.render();
-})();
-</script>
-</body>
-</html>";
-const SUPABASE_ANON_KEY = "JOUW-ANON-KEY";
-const VAPID_PUBLIC_KEY = ""; // fase 4: hier je VAPID publieke sleutel
-// ================================================================================
-
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-const I18N = {
-  nl: { dir:"ltr", login:"Inloggen of nieuw account", username:"Kies een gebruikersnaam (geen echte naam!)", code:"Kies een geheime code (min. 6 tekens)", loginBtn:"Ga verder", today:"Vandaag", week:"Week", addTask:"Nieuwe taak", save:"Opslaan", done:"Klaar", delete:"Verwijderen", logout:"Uitloggen", reminder:"⏰ Nog {n} taken voor vandaag!", welcome:"Hoi {u}! 👋", privacy:"🔒 Geen tracking, geen advertenties, data in Europa. Verwijderen = echt weg.", notifOn:"🔔 Meldingen" },
-  en: { dir:"ltr", login:"Log in or create account", username:"Choose a username (not your real name!)", code:"Choose a secret code (min. 6 characters)", loginBtn:"Continue", today:"Today", week:"Week", addTask:"New task", save:"Save", done:"Done", delete:"Delete", logout:"Log out", reminder:"⏰ {n} tasks left today!", welcome:"Hi {u}! 👋", privacy:"🔒 No tracking, no ads, data in Europe. Delete means gone.", notifOn:"🔔 Notifications" },
-  ar: { dir:"rtl", login:"تسجيل الدخول أو حساب جديد", username:"اختر اسم مستخدم (ليس اسمك الحقيقي!)", code:"اختر رمزاً سرياً (6 أحرف على الأقل)", loginBtn:"متابعة", today:"اليوم", week:"الأسبوع", addTask:"مهمة جديدة", save:"حفظ", done:"تم", delete:"حذف", logout:"خروج", reminder:"⏰ بقيت {n} مهام اليوم!", welcome:"مرحباً {u}! 👋", privacy:"🔒 لا تتبع، لا إعلانات، البيانات في أوروبا.", notifOn:"🔔 الإشعارات" },
-  so: { dir:"ltr", login:"Gal ama akoon cusub", username:"Dooro magac isticmaale (HA digin magacaaga runta ah!)", code:"Dooroo koodh sir ah (ugu yaraan 6)", loginBtn:"Sii wad", today:"Maanta", week:"Toddobaad", addTask:"Hawl cusub", save:"Kaydi", done:"La sameeyay", delete:"Tirtir", logout:"Ka bax", reminder:"⏰ waxaa ka hadhay {n} hawl maanta!", welcome:"Salaan {u}! 👋", privacy:"🔒 Wax raadin ah, wax xayeysiis ah; xogta Yurub.", notifOn:"🔔 Ogeysiisyo" },
-  tr: { dir:"ltr", login:"Giriş yap veya hesap oluştur", username:"Bir kullanıcı adı seç (gerçek adın değil!)", code:"Gizli bir kod seç (en az 6 karakter)", loginBtn:"Devam", today:"Bugün", week:"Hafta", addTask:"Yeni görev", save:"Kaydet", done:"Hazır", delete:"Sil", logout:"Çıkış", reminder:"⏰ bugün {n} görev kaldı!", welcome:"Merhaba {u}! 👋", privacy:"🔒 Takip yok, reklam yok; veriler Avrupa'da.", notifOn:"🔔 Bildirimler" },
-  uk: { dir:"ltr", login:"Увійти або створити акаунт", username:"Вибери ім'я користувача (не справжнє!)", code:"Вибери секретний код (мін. 6 символів)", loginBtn:"Продовжити", today:"Сьогодні", week:"Тиждень", addTask:"Нова задача", save:"Зберегти", done:"Готово", delete:"Видалити", logout:"Вийти", reminder:"⏰ залишилось {n} завдань сьогодні!", welcome:"Привіт, {u}! 👋", privacy:"🔒 Без стеження і реклами; дані в ЄС.", notifOn:"🔔 Сповіщення" },
-  pl: { dir:"ltr", login:"Zaloguj się lub utwórz konto", username:"Wybierz nazwę użytkownika (nie prawdziwe imię!)", code:"Wybierz tajny kod (min. 6 znaków)", loginBtn:"Dalej", today:"Dziś", week:"Tydzień", addTask:"Nowe zadanie", save:"Zapisz", done:"Gotowe", delete:"Usuń", logout:"Wyloguj", reminder:"⏰ zostało dziś {n} zadań!", welcome:"Cześć, {u}! 👋", privacy:"🔒 Bez śledzenia i reklam; dane w UE.", notifOn:"🔔 Powiadomienia" }
-};
-
-window.app = {
-  lang: localStorage.getItem("sb_lang") || "nl",
-  user: null,
-
-  t(key, vars) {
-    let s = (I18N[this.lang] && I18N[this.lang][key]) || I18N.nl[key] || key;
-    if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]);
-    return s;
-  },
-
-  setLang(l) {
-    this.lang = l; localStorage.setItem("sb_lang", l);
-    document.documentElement.lang = l; document.documentElement.dir = I18N[l].dir;
-    this.render();
-  },
-
-  async login() {
-    const user = document.getElementById("in-user").value.trim();
-    const code = document.getElementById("in-code").value;
-    const err = document.getElementById("err");
-    err.textContent = "";
-    if (!user || code.length < 6) { err.textContent = "✗ gebruikersnaam + code van min. 6 tekens"; return; }
-    const { data: auth, error: e1 } = await sb.auth.signInAnonymously();
-    if (e1) { err.textContent = e1.message; return; }
-    const { error: e2 } = await sb.from("profiles").upsert({
-      id: auth.user.id, username: user, recovery_code: btoa(code), lang: this.lang
-    });
-    if (e2) { err.textContent = e2.message; return; }
-    location.reload();
-  },
-
-  async logout() { await sb.auth.signOut(); location.reload(); },
-
-  tab(t) {
-    document.querySelectorAll(".tab").forEach(el => el.classList.toggle("active", el.dataset.tab === t));
-    this.listTasks(t === "week");
-  },
-
-  showAdd() { document.getElementById("addForm").hidden = false; },
-
-  async addTask() {
-    const subject = document.getElementById("f-subject").value.trim();
-    const title = document.getElementById("f-title").value.trim();
-    const deadline = document.getElementById("f-deadline").value || null;
-    if (!subject || !title) return;
-    const { error } = await sb.from("tasks").insert({ user_id: this.user.id, subject, title, deadline });
-    if (!error) { document.getElementById("addForm").hidden = true; this.listTasks(); }
-  },
-
-  async toggle(id, done) { await sb.from("tasks").update({ done: !done }).eq("id", id); this.listTasks(); },
-  async del(id) { await sb.from("tasks").delete().eq("id", id); this.listTasks(); },
-
-  async listTasks(week) {
-    const { data } = await sb.from("tasks").select("*").order("deadline", { ascending: true, nullsFirst: false });
-    const grid = document.getElementById("taskGrid"); grid.innerHTML = "";
-    let open = 0;
-    const today = new Date().toISOString().slice(0, 10);
-    (data || []).forEach(task => {
-      const late = task.deadline && task.deadline < today && !task.done;
-      const soon = task.deadline && task.deadline >= today && task.deadline <= new Date(Date.now() + 2 * 864e5).toISOString().slice(0, 10);
-      if (!task.done && task.deadline === today) open++;
-      if (week && task.deadline && task.deadline > today) return;
-      const cls = task.done ? "ok" : late ? "late" : soon ? "soon" : "ok";
-      const emoji = task.done ? "✅" : late ? "⚠️" : soon ? "⏰" : "📅";
-      const card = document.createElement("div"); card.className = "card";
-      card.innerHTML = "<h3>" + task.subject + " – " + task.title + "</h3>" +
-        '<span class="tag ' + cls + '">' + emoji + " " + (task.deadline || "") + "</span>" +
-        '<div class="progress"><div style="width:' + (task.done ? 100 : 40) + '%"></div></div>' +
-        '<button class="btn primary" onclick="app.toggle(' + task.id + "," + task.done + ')">' + this.t("done") + "</button>" +
-        '<button class="btn ghost" onclick="app.del(' + task.id + ')">' + this.t("delete") + "</button>";
-      grid.appendChild(card);
-    });
-    if (open && "Notification" in window && Notification.permission === "granted") {
-      new Notification("StudyBuddy", { body: this.t("reminder", { n: open }) });
-    }
-  },
-
-  async enablePush() {
-    if (!("serviceWorker" in navigator)) return;
-    const reg = await navigator.serviceWorker.ready;
-    const perm = await Notification.requestPermission();
-    if (perm !== "granted") return;
-    if (!VAPID_PUBLIC_KEY) { alert("Vul eerst je VAPID-sleutel in (bovenin index.html) — zie README fase 4."); return; }
-    const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: VAPID_PUBLIC_KEY });
-    await sb.from("push_subs").upsert({ user_id: this.user.id, endpoint: sub.endpoint, keys: sub.toJSON().keys });
+    alert("Meldingen staan aan! Je krijgt een seintje zodra er taken zijn.");
   },
 
   render() {
