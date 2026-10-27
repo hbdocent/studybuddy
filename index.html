@@ -173,6 +173,9 @@ window.app = {
     if (!user || code.length < 6) { err.textContent = "✗ gebruikersnaam + code van min. 6 tekens"; return; }
     const { data: auth, error: e1 } = await sb.auth.signInAnonymously();
     if (e1) { err.textContent = e1.message; return; }
+    const { data: existing, error: eCheck } = await sb.from("profiles").select("id").eq("username", user).maybeSingle();
+    if (eCheck) { err.textContent = eCheck.message; return; }
+    if (existing) { err.textContent = "✗ Die gebruikersnaam is al bezig — kies een andere!"; return; }
     const { error: e2 } = await sb.from("profiles").upsert({
       id: auth.user.id, username: user, recovery_code: btoa(code), lang: this.lang
     });
@@ -340,9 +343,10 @@ window.app = {
       const { data: prof, error: profErr } = await sb.from("profiles").select("username").eq("id", session.user.id).maybeSingle();
       let username = (prof && prof.username) || "";
       if (!username) {
-        /* Profiel ontbreekt (bv. account van vóór de database-aanmaak) → maak 'm alsnog */
-        const { error: upErr } = await sb.from("profiles").upsert({ id: session.user.id, username: "leerling", recovery_code: "-", lang: app.lang });
-        username = upErr ? "" : "leerling";
+        /* Profiel ontbreeft → maak 'm alsnog met unieke naam (geen botsingen) */
+        const tempName = "leerling-" + session.user.id.slice(0, 8);
+        const { error: upErr } = await sb.from("profiles").upsert({ id: session.user.id, username: tempName, recovery_code: "-", lang: app.lang });
+        username = upErr ? "" : tempName;
       }
       document.getElementById("t-welcome").textContent = app.t("welcome", { u: username });
       if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
