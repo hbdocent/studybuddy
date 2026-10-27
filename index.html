@@ -301,16 +301,13 @@ window.app = {
       list.map(s => '<option value="' + s + '">' + s + "</option>").join("");
   },
 
-  /* 08:00-melding op de dag zelf (en herinnering voor taken die vandaag te laat zijn) */
+  /* Melding bij elke keer dat de app wordt geopend (als er iets te doen is) */
   checkReminders() {
     if (!("Notification" in window) || Notification.permission !== "granted") return;
     const today = new Date().toISOString().slice(0, 10);
     const dueToday = this.tasks.filter(tk => tk.deadline === today && !tk.done);
     const late = this.tasks.filter(tk => tk.deadline && tk.deadline < today && !tk.done);
     if (!dueToday.length && !late.length) return;
-    const key = "sb_notif_" + today;
-    if (localStorage.getItem(key)) return; // vandaag al gesignaleerd
-    localStorage.setItem(key, "1");
     let body = this.t("reminder", { n: dueToday.length });
     if (late.length) body = "⚠️ Te laat: " + late.map(tk => tk.subject.split(" ")[0] + " " + tk.title).join(", ") + (dueToday.length ? " | " + body : "");
     new Notification("StudyBuddy ☀️", { body });
@@ -319,7 +316,7 @@ window.app = {
   async enablePush() {
     const perm = await Notification.requestPermission();
     if (perm !== "granted") return;
-    alert("Meldingen staan aan! Je krijgt een seintje zodra je de app opent en er nog iets te doen is.");
+    alert("Meldingen staan aan! Je krijgt nu een seintje elke keer dat je de app opent en er nog iets te doen is.");
   },
 
   async loginRender() {
