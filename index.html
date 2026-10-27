@@ -337,8 +337,14 @@ window.app = {
       app.user = session.user;
       document.getElementById("loginTpl").hidden = true;
       document.getElementById("appTpl").hidden = false;
-      const { data: prof } = await sb.from("profiles").select("username").eq("id", session.user.id).single();
-      document.getElementById("t-welcome").textContent = app.t("welcome", { u: (prof && prof.username) || "" });
+      const { data: prof, error: profErr } = await sb.from("profiles").select("username").eq("id", session.user.id).maybeSingle();
+      let username = (prof && prof.username) || "";
+      if (!username) {
+        /* Profiel ontbreekt (bv. account van vóór de database-aanmaak) → maak 'm alsnog */
+        const { error: upErr } = await sb.from("profiles").upsert({ id: session.user.id, username: "leerling", recovery_code: "-", lang: app.lang });
+        username = upErr ? "" : "leerling";
+      }
+      document.getElementById("t-welcome").textContent = app.t("welcome", { u: username });
       if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
       app.listTasks();
     } else {
