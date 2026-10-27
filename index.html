@@ -173,13 +173,18 @@ window.app = {
     if (!user || code.length < 6) { err.textContent = "✗ gebruikersnaam + code van min. 6 tekens"; return; }
     const { data: auth, error: e1 } = await sb.auth.signInAnonymously();
     if (e1) { err.textContent = e1.message; return; }
-    const { data: existing, error: eCheck } = await sb.from("profiles").select("id").eq("username", user).maybeSingle();
-    if (eCheck) { err.textContent = eCheck.message; return; }
-    if (existing) { err.textContent = "✗ Die gebruikersnaam is al bezig — kies een andere!"; return; }
     const { error: e2 } = await sb.from("profiles").upsert({
       id: auth.user.id, username: user, recovery_code: btoa(code), lang: this.lang
     });
-    if (e2) { err.textContent = e2.message; return; }
+    /* 409 = gebruikersnaam bestaat al (database dwingt uniciteit af — RLS kan dit niet vooraf checken) */
+    if (e2) {
+      if (String(e2.message || "").includes("duplicate key") || e2.code === "23505" || String(e2.message).includes("409")) {
+        err.textContent = "✗ Die gebruikersnaam is al bezig — kies een andere!";
+      } else {
+        err.textContent = e2.message;
+      }
+      return;
+    }
     location.reload();
   },
 
