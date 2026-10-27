@@ -319,7 +319,7 @@ window.app = {
   async enablePush() {
     const perm = await Notification.requestPermission();
     if (perm !== "granted") return;
-    alert("Meldingen staan aan! Elke ochtend om 08:00 krijg je een seintje als er iets te doen is (op het moment dat je de app opent).");
+    alert("Meldingen staan aan! Je krijgt een seintje zodra je de app opent en er nog iets te doen is.");
   },
 
   async loginRender() {
