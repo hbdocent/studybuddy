@@ -1,4 +1,4 @@
-const CACHE = "studybuddy-v2";
+const CACHE = "studybuddy-v4";
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(["./", "./index.html"])));
   self.skipWaiting();
@@ -6,7 +6,9 @@ self.addEventListener("install", (e) => {
 self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
-  if (new URL(e.request.url).hostname.includes("supabase")) return; // data altijd via netwerk
+  const url = new URL(e.request.url);
+  if (url.protocol.indexOf("http") !== 0) return; /* alleen http/https cachen */
+  if (url.hostname.includes("supabase")) return; /* data altijd via netwerk */ // data altijd via netwerk
   e.respondWith(
     caches.match(e.request).then((hit) => hit || fetch(e.request).then((res) => {
       const copy = res.clone();
